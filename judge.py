@@ -1,68 +1,10 @@
 import argparse
 import subprocess
+import json
 import os
 import sys
 
-def ac():
-    cprint('green', """
- █████╗  ██████╗
-██╔══██╗██╔════╝
-███████║██║     
-██╔══██║██║     
-██║  ██║╚██████╗
-╚═╝  ╚═╝ ╚═════╝
-    """)
-
-def wa():
-    cprint('red', """
-██╗    ██╗ █████╗ 
-██║    ██║██╔══██╗
-██║ █╗ ██║███████║
-██║███╗██║██╔══██║
-╚███╔███╔╝██║  ██║
- ╚══╝╚══╝ ╚═╝  ╚═╝
-    """)
-
-def re():
-    cprint('cyan', """
-██████╗ ███████╗
-██╔══██╗██╔════╝
-██████╔╝█████╗  
-██╔══██╗██╔══╝  
-██║  ██║███████╗
-╚═╝  ╚═╝╚══════╝
-    """)
-
-def ce():
-    cprint('yellow', """
- ██████╗███████╗
-██╔════╝██╔════╝
-██║     █████╗  
-██║     ██╔══╝  
-╚██████╗███████╗
- ╚═════╝╚══════╝
-    """)
-
-def tle():
-    cprint('blue', """
-████████╗██╗     ███████╗
-╚══██╔══╝██║     ██╔════╝
-   ██║   ██║     █████╗  
-   ██║   ██║     ██╔══╝  
-   ██║   ███████╗███████╗
-   ╚═╝   ╚══════╝╚══════╝
-    """)
-
-def mle():
-    cprint('magenta', """
-███╗   ███╗██╗     ███████╗
-████╗ ████║██║     ██╔════╝
-██╔████╔██║██║     █████╗  
-██║╚██╔╝██║██║     ██╔══╝  
-██║ ╚═╝ ██║███████╗███████╗
-╚═╝     ╚═╝╚══════╝╚══════╝
-    """)
-
+executable_path = None
 
 def cprint(color, *args, **kwargs):
     color_codes = {
@@ -84,42 +26,176 @@ def cprint(color, *args, **kwargs):
 def error_exit(message):
     cprint('red', 'Error: ', end='')
     print(message)
+    if executable_path is not None:
+        os.remove(executable_path)
     sys.exit(1)
 
-def compile_cpp(file_path):
-    if not os.path.isfile(file_path):
-        print(f"\033[91mError: The file '{file_path}' does not exist.\033[0m")
-        return None
-    
-    output_filename = os.path.splitext(file_path)[0]
+class Result:
+    def __init__(self):
+        self.result = None
 
-    try:
-        result = subprocess.run(
-            ['g++', file_path, '-o', output_filename],
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        print(f"Compilation successful. Executable created: {output_filename}")
+    def set(self, result):
+        valid_results = ['AC', 'WA', 'RE', 'CE', 'TLE', 'MLE']
+        if result not in valid_results:
+            raise ValueError(f"Invalid result: {result}. Must be one of {valid_results}.")
+        self.result = result
 
-    except subprocess.CalledProcessError as e:
-        ce()
-        print(f"\033[91mCompilation failed with error:\033[0m\n{e.stderr.decode().strip()}")
-        return None
+    def print(self):
+        print("\nResult:")
 
-    return output_filename
+        if self.result is None:
+            error_exit("No result.")
+        elif self.result == 'AC':
+            self.ac()
+        elif self.result == 'WA':
+            self.wa()
+        elif self.result == 'RE':
+            self.re()
+        elif self.result == 'CE':
+            self.ce()
+        elif self.result == 'TLE':
+            self.tle()
+        elif self.result == 'MLE':
+            self.mle()
 
-def judge_problem(problem_name, submission_file):
-    problem_path = os.path.join(os.getcwd(), 'problems', problem_name)
-    submission_path = os.path.join(os.getcwd(), 'submissions', submission_file)
+    def ac(self):
+        cprint('green', """
+ █████╗  ██████╗
+██╔══██╗██╔════╝
+███████║██║     
+██╔══██║██║     
+██║  ██║╚██████╗
+╚═╝  ╚═╝ ╚═════╝
+        """)
 
-    if not os.path.isdir(problem_path):
-        error_exit(f"The problem '{problem_name}' does not exist in './problems'.")
+    def wa(self):
+        cprint('red', """
+██╗    ██╗ █████╗ 
+██║    ██║██╔══██╗
+██║ █╗ ██║███████║
+██║███╗██║██╔══██║
+╚███╔███╔╝██║  ██║
+ ╚══╝╚══╝ ╚═╝  ╚═╝
+        """)
 
-    compile_cpp(submission_path)
+    def re(self):
+        cprint('cyan', """
+██████╗ ███████╗
+██╔══██╗██╔════╝
+██████╔╝█████╗  
+██╔══██╗██╔══╝  
+██║  ██║███████╗
+╚═╝  ╚═╝╚══════╝
+        """)
 
-    print(f"Judging the problem: {problem_name}")
-    print(f"Submission file: {submission_file}")
+    def ce(self):
+        cprint('yellow', """
+ ██████╗███████╗
+██╔════╝██╔════╝
+██║     █████╗  
+██║     ██╔══╝  
+╚██████╗███████╗
+ ╚═════╝╚══════╝
+        """)
+
+    def tle(self):
+        cprint('blue', """
+████████╗██╗     ███████╗
+╚══██╔══╝██║     ██╔════╝
+   ██║   ██║     █████╗  
+   ██║   ██║     ██╔══╝  
+   ██║   ███████╗███████╗
+   ╚═╝   ╚══════╝╚══════╝
+        """)
+
+    def mle(self):
+        cprint('magenta', """
+███╗   ███╗██╗     ███████╗
+████╗ ████║██║     ██╔════╝
+██╔████╔██║██║     █████╗  
+██║╚██╔╝██║██║     ██╔══╝  
+██║ ╚═╝ ██║███████╗███████╗
+╚═╝     ╚═╝╚══════╝╚══════╝
+        """)
+
+class Judge():
+    def __init__(self, problem_name, submission_file):
+        self.problem_name = problem_name
+        self.submission_file = submission_file
+        self.problem_path = None
+        self.submission_path = None
+
+        self.problem_info = None
+        self.result = Result()
+
+    def run(self):
+        problem_name = self.problem_name
+        submission_file = self.submission_file
+        
+        self.problem_path = os.path.join(os.getcwd(), 'problems', problem_name)
+        self.submission_path = os.path.join(os.getcwd(), 'submissions', submission_file)
+
+        if not os.path.isdir(self.problem_path):
+            error_exit(f"The problem '{problem_name}' does not exist in './problems'.")
+
+        if not os.path.isfile(self.submission_path):
+            error_exit(f"The file '{submission_file}' does not exist in './submissions'.")
+
+        self.get_problem_info()
+
+        print('\nProblem: ', end='')
+        cprint('cyan', self.problem_info['title'])
+        print()
+
+        global executable_path
+        executable_path = self.compile_cpp(self.submission_path)
+        if executable_path is not None:
+            self.judge_problem()
+
+        self.result.print()
+        self.cleanup()
+
+    def get_problem_info(self):
+        file_path = os.path.join(self.problem_path, 'problem.json')
+
+        with open(file_path, 'r') as f:
+            self.problem_info = json.load(f)
+
+    def compile_cpp(self, file_path):
+        max_error_length = 1000
+        output_filename = os.path.splitext(file_path)[0]
+
+        try:
+            subprocess.run(
+                ['g++', file_path, '-o', output_filename],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            cprint('green', 'Compilation successful.')
+
+        except subprocess.CalledProcessError as e:
+            self.result.set('CE')
+            error_message = e.stderr.decode().strip()
+            
+            if len(error_message) > max_error_length:
+                error_message = error_message[:max_error_length] + '... [output truncated]'
+
+            cprint('red', 'Compilation failed with error:')
+            print(error_message)
+            return None
+
+        return output_filename
+
+    def judge_problem(self):
+        global executable_path
+        problem_path = self.problem_path
+        print("Judging...")
+
+    def cleanup(self):
+        global executable_path
+        if executable_path is not None:
+            os.remove(executable_path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Judge a problem submission.", 
@@ -130,11 +206,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    ac()
-    wa()
-    re()
-    ce()
-    tle()
-    mle()
-    
-    judge_problem(args.problem_name, args.submission_file)
+    judge = Judge(args.problem_name, args.submission_file)
+    judge.run()
