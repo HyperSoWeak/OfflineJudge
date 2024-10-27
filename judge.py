@@ -162,8 +162,11 @@ class Judge():
 
         self.get_problem_info()
 
-        print('\nProblem: ', end='')
+        print()
+        print('Problem: ', end='')
         cprint('cyan', self.problem_info['title'])
+        print('Submission: ', end='')
+        cprint('yellow', submission_file)
         print()
 
         self.executable_path = self.compile_cpp(self.submission_path)
