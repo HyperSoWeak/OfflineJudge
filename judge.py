@@ -1,10 +1,15 @@
 import argparse
 import subprocess
 import difflib
+import resource
+import threading
 import json
 import os
 import sys
+import signal
 import time
+
+# TODO: Has custom grader
 
 def cprint(color, *args, **kwargs):
     color_codes = {
@@ -185,7 +190,7 @@ class Judge():
 
         try:
             subprocess.run(
-                ['g++', file_path, '-o', output_path],
+                ['g++', '-O0', file_path, '-o', output_path],
                 check=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE
@@ -263,27 +268,73 @@ class Judge():
         return result == 'AC'
 
     def execute(self, input_file, output_file, answer_file):
-        # TODO: Implement TLE, MLE and RE handling
+        # TODO: Implement MLE handling
         # TODO: Multithreading
         # FIXME: Maybe use CPU time instead of wall time
 
         time_limit = self.problem_info['time_limit']
-        start_time = time.time()
+        memory_limit = self.problem_info['memory_limit'] * 1024 * 1024
+
+        resource.setrlimit(resource.RLIMIT_AS, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
+        start_usage = resource.getrusage(resource.RUSAGE_CHILDREN)
 
         try:
             with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
-                subprocess.run([self.executable_path], stdin=infile, stdout=outfile, check=True, timeout=time_limit)
+                subprocess.run(
+                    [self.executable_path],
+                    stdin=infile,
+                    stdout=outfile,
+                    stderr=subprocess.PIPE,
+                    check=True,
+                    timeout=time_limit
+                )
+
         except subprocess.TimeoutExpired:
             return ('TLE', time_limit)
+        except subprocess.CalledProcessError:
+            return ('RE', 0)
+        except MemoryError:
+            return ('MLE', 0)
 
-        end_time = time.time()
-        runtime = round(end_time - start_time, 3)
+        end_usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+        self_usage = resource.getrusage(resource.RUSAGE_SELF)
+        cpu_time_used = (end_usage.ru_utime - start_usage.ru_utime) + (end_usage.ru_stime - start_usage.ru_stime)
+        runtime = round(cpu_time_used, 3)
+
+        memory_used = end_usage.ru_maxrss - self_usage.ru_maxrss
+
+        print(self_usage.ru_maxrss)
+
+        # print(f"Memory Used: {memory_used} KB")
+
+        if memory_used > memory_limit / 1024:
+            return ('MLE', memory_used)
+
+        if runtime >= time_limit:
+            return ('TLE', runtime)
 
         diff = self.compare_output(self.output_path, answer_file)
         if diff:
             return ('WA', runtime)
         
         return ('AC', runtime)
+
+    def get_pss(self, pid):
+        """Get the PSS (Proportional Set Size) of a given process ID."""
+        pss = 0
+        try:
+            with open(f'/proc/{pid}/smaps', 'r') as f:
+                for line in f:
+                    if 'Pss:' in line:
+                        # Extract PSS value
+                        pss_value = int(line.split()[1])
+                        pss += pss_value
+        except FileNotFoundError:
+            print(f"Process with PID {pid} not found.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        
+        return pss  # PSS in KB
 
     def compare_output(self, output_file, answer_file):
         with open(output_file, 'r') as out, open(answer_file, 'r') as ans:
