@@ -258,8 +258,12 @@ class Judge():
 
         result, runtime = self.execute(testcase['input'], self.output_path, testcase['output'])
 
-        if result == 'TLE':
+        if result == 'MLE':
+            self.result.set_result('MLE')
+        elif result == 'TLE':
             self.result.set_result('TLE')
+        elif result == 'RE':
+            self.result.set_result('RE')
         elif result == 'WA':
             self.result.set_result('WA')
 
@@ -303,12 +307,8 @@ class Judge():
 
         memory_used = end_usage.ru_maxrss - self_usage.ru_maxrss
 
-        print(self_usage.ru_maxrss)
-
-        # print(f"Memory Used: {memory_used} KB")
-
         if memory_used > memory_limit / 1024:
-            return ('MLE', memory_used)
+            return ('MLE', runtime)
 
         if runtime >= time_limit:
             return ('TLE', runtime)
@@ -318,23 +318,6 @@ class Judge():
             return ('WA', runtime)
         
         return ('AC', runtime)
-
-    def get_pss(self, pid):
-        """Get the PSS (Proportional Set Size) of a given process ID."""
-        pss = 0
-        try:
-            with open(f'/proc/{pid}/smaps', 'r') as f:
-                for line in f:
-                    if 'Pss:' in line:
-                        # Extract PSS value
-                        pss_value = int(line.split()[1])
-                        pss += pss_value
-        except FileNotFoundError:
-            print(f"Process with PID {pid} not found.")
-        except Exception as e:
-            print(f"An error occurred: {e}")
-        
-        return pss  # PSS in KB
 
     def compare_output(self, output_file, answer_file):
         with open(output_file, 'r') as out, open(answer_file, 'r') as ans:
