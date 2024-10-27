@@ -1,0 +1,95 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage{listings}
+\usepackage{paracol}
+\usepackage[left=20mm, right=20mm, top=25mm, bottom=25mm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+
+\usepackage{titling}
+\setlength{\droptitle}{-2cm}
+
+\usepackage{xeCJK}
+\setCJKmainfont[AutoFakeBold=true, AutoFakeSlant=true]{AR PL KaitiM Big5}
+\setCJKmonofont[AutoFakeBold=true, AutoFakeSlant=true]{AR PL KaitiM Big5}
+\setCJKsansfont[AutoFakeBold=true, AutoFakeSlant=true]{AR PL KaitiM Big5}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textbf{A+B Problem}} % Left header
+\fancyhead[C]{\textit{By HyperSoWeak}} % Center header
+\fancyhead[R]{\today} % Right header
+\fancyfoot[C]{\thepage} % Center footer with page number
+
+\setlength{\headheight}{15pt}
+
+\lstset{
+    frame=single, % Use a single frame around the code
+    basicstyle=\ttfamily, % Typewriter font for code
+    columns=flexible, % Flexible column width
+    keepspaces=true, % Keep spaces in code
+    breaklines=true, % Allow line breaking
+    backgroundcolor=\color{white}, % Background color of the listing
+    rulecolor=\color{black}, % Color of the frame
+    xleftmargin=10pt, % Left padding
+    xrightmargin=10pt, % Right padding
+    aboveskip=5pt, % Space above the box
+    belowskip=5pt, % Space below the box
+    framexleftmargin=5pt, % Left margin inside frame
+    framexrightmargin=5pt, % Right margin inside frame
+    framexbottommargin=5pt, % Bottom margin inside frame
+    framextopmargin=5pt % Top margin inside frame
+}
+
+
+\begin{document}
+
+\begin{center}
+    \parbox{0.8\textwidth}{
+        \centering
+        \vspace{0.5em}
+        \LARGE \textbf{A+B Problem}\\[0.5em]
+        \large{Time limit: 1s}\\
+        \large{Memory limit: 256MB}\\[0.8em]
+    }
+\end{center}
+\thispagestyle{fancy}
+
+\section*{Problem Description}
+Given two integers, calculate their sum and output the result. This simple task will help familiarize you with input and output formatting in programming contests.
+
+\section*{Input Format}
+The input consists of two integers $a$, $b$ separated by a space.
+
+\section*{Output Format}
+Output a single integer, which is the sum of the input integers.
+
+\section*{Specifications}
+\begin{itemize}
+    \item $0 \le a, b \le 10^9$
+\end{itemize}
+
+\begin{paracol}{2}
+    \subsection*{Sample Input 1}
+    \begin{lstlisting}
+2 3
+    \end{lstlisting}
+    \switchcolumn
+    \subsection*{Sample Output 1}
+    \begin{lstlisting}
+5
+    \end{lstlisting}
+\end{paracol}
+
+\begin{paracol}{2}
+    \subsection*{Sample Input 2}
+    \begin{lstlisting}
+1111111 2222222
+    \end{lstlisting}
+    \switchcolumn
+    \subsection*{Sample Output 2}
+    \begin{lstlisting}
+3333333
+    \end{lstlisting}
+\end{paracol}
+
+\end{document}
