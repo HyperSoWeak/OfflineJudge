@@ -1,0 +1,131 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage{listings}
+\usepackage{paracol}
+\usepackage[left=20mm, right=20mm, top=25mm, bottom=25mm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+
+\usepackage{titling}
+\setlength{\droptitle}{-2cm}
+
+\usepackage{xeCJK}
+\setCJKmainfont[AutoFakeBold=true, AutoFakeSlant=true]{DFKai-SB}
+\setCJKmonofont[AutoFakeBold=true, AutoFakeSlant=true]{DFKai-SB}
+\setCJKsansfont[AutoFakeBold=true, AutoFakeSlant=true]{DFKai-SB}
+
+\usepackage{setspace}
+\setstretch{1.1}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textbf{Rich Cake}} % Left header
+\fancyhead[C]{\textit{By HyperSoWeak}} % Center header
+\fancyhead[R]{\today} % Right header
+\fancyfoot[C]{\thepage} % Center footer with page number
+
+\setlength{\headheight}{15pt}
+
+\lstset{
+    frame=single, % Use a single frame around the code
+    basicstyle=\ttfamily, % Typewriter font for code
+    columns=flexible, % Flexible column width
+    keepspaces=true, % Keep spaces in code
+    breaklines=true, % Allow line breaking
+    backgroundcolor=\color{white}, % Background color of the listing
+    rulecolor=\color{black}, % Color of the frame
+    xleftmargin=10pt, % Left padding
+    xrightmargin=10pt, % Right padding
+    aboveskip=5pt, % Space above the box
+    belowskip=5pt, % Space below the box
+    framexleftmargin=5pt, % Left margin inside frame
+    framexrightmargin=5pt, % Right margin inside frame
+    framexbottommargin=0pt, % Bottom margin inside frame
+    framextopmargin=5pt % Top margin inside frame
+}
+
+
+\begin{document}
+
+\begin{center}
+    \parbox{0.8\textwidth}{
+        \centering
+        \vspace{0.5em}
+        \LARGE \textbf{Rich Cake}\\[0.5em]
+        \large{Time limit: 1s}\\
+        \large{Memory limit: 256MB}\\[0.8em]
+    }
+\end{center}
+\thispagestyle{fancy}
+
+\section*{Problem Description}
+你是一名頂尖的蛋糕師傅，專精於打造三層高的巨無霸生日蛋糕。每層蛋糕都有 $n$ 種不同的大小和價格，讓你可以靈活地組合出各種蛋糕。
+
+不過，製作蛋糕可不是隨便疊的！根據蛋糕界不成文的物理法則，底層的蛋糕必須最大，中層要比底層小，頂層得比中層還小。要是你挑錯了大小，蛋糕就會直接崩塌成一堆奶油與慘叫！
+
+今天，有一位超級暴發戶來到你的蛋糕店，提出了一個瘋狂的要求：「把你能做的所有蛋糕，每種都給我做一個！」作為蛋糕師傅，你立刻發現這是一個賺翻的機會。你的任務是計算出所有符合「底層最寬、中層較窄、頂層最小」規則的蛋糕組合，並且計算出這些蛋糕的總價格！
+
+每個蛋糕的價格是其底層、中層和頂層蛋糕價格的總和，快來看看今天你能從這位暴發戶身上賺到多少吧！
+
+\section*{Input Format}
+輸入共七行：
+\begin{itemize}
+    \item 第一行是一個整數 $n$，表示每層蛋糕大小和價格的選項數量。
+    \item 接下來兩行各有 $n$ 個整數，分別代表底層蛋糕的大小 $A_i$ 和價格 $P_i$。
+    \item 接下來兩行各有 $n$ 個整數，分別代表中層蛋糕的大小 $B_i$ 和價格 $Q_i$。
+    \item 接下來兩行各有 $n$ 個整數，分別代表頂層蛋糕的大小 $C_i$ 和價格 $R_i$。
+\end{itemize}
+
+\section*{Output Format}
+輸出一個整數，代表所有合法蛋糕的總價格。
+
+\section*{Constraints}
+\begin{itemize}
+    \item $1 \le n \le 10^5$
+    \item $1 \le A_i, B_i, C_i \le 10^9$
+    \item $1 \le P_i, Q_i, R_i \le 10^3$
+\end{itemize}
+
+\section*{Subtasks}
+\begin{itemize}
+    \item \textbf{Subtask 1 (5 points)}：$n = 1$
+    \item \textbf{Subtask 2 (25 points)}：$n \le 300$
+    \item \textbf{Subtask 3 (70 points)}：無其他限制
+\end{itemize}
+
+\begin{paracol}{2}
+    \subsection*{Sample Input 1}
+    \begin{lstlisting}
+1
+1
+4
+2
+5
+3
+6        
+    \end{lstlisting}
+    \switchcolumn
+    \subsection*{Sample Output 1}
+    \begin{lstlisting}
+15
+    \end{lstlisting}
+\end{paracol}
+
+\begin{paracol}{2}
+    \subsection*{Sample Input 2}
+    \begin{lstlisting}
+2
+2 4
+7 25
+3 8
+12 9
+5 11
+27 18        
+    \end{lstlisting}
+    \switchcolumn
+    \subsection*{Sample Output 2}
+    \begin{lstlisting}
+169
+    \end{lstlisting}
+\end{paracol}
+
+\end{document}
